@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ES26-080 - Wannop Developments E2E - Nudura proposal</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+  :root { --teal:#009f84; --teal-dk:#006b5c; --ink:#16202a; --grey:#6b7580; --line:#e3e8ea; --bg:#f5f7f7; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; font-family:"Segoe UI", -apple-system, Roboto, Arial, sans-serif; color:var(--ink); background:var(--bg); }
+  button { font:inherit; cursor:pointer; }
+  .hidden { display:none !important; }
+  /* gate */
+  #gate { position:fixed; inset:0; display:grid; place-items:center; background:linear-gradient(135deg, #00362e, #009f84); z-index:50; padding:16px; }
+  .gate-card { background:#fff; border-radius:14px; padding:34px 36px; width:min(440px, 100%); box-shadow:0 20px 60px rgba(0,0,0,.35); text-align:center; }
+  .gate-card .logos { display:flex; justify-content:center; gap:22px; align-items:center; margin-bottom:18px; }
+  .gate-card .logos img { height:38px; }
+  .gate-card h1 { font-size:20px; margin:6px 0 4px; } .gate-card p { color:var(--grey); margin:0 0 20px; font-size:14px; }
+  .gate-card input { width:100%; padding:12px 14px; font-size:18px; letter-spacing:4px; text-align:center; border:1px solid var(--line); border-radius:8px; }
+  .btn { background:var(--teal); color:#fff; border:0; border-radius:8px; padding:12px 22px; font-weight:600; }
+  .btn:hover { background:var(--teal-dk); } .btn.ghost { background:transparent; color:var(--teal-dk); border:1px solid var(--teal); }
+  #gate .err { color:#c0392b; font-size:13px; min-height:18px; margin-top:8px; }
+  /* welcome */
+  #welcome { position:fixed; inset:0; background:radial-gradient(circle at 50% 40%, #ffffff 0%, #e6efee 70%, #d4e3e0 100%); z-index:40; }
+  #welcome model-viewer { width:100%; height:100%; --poster-color:transparent; }
+  .wl-top { position:absolute; left:0; right:0; top:0; padding:22px 30px; display:flex; justify-content:space-between; align-items:center; pointer-events:none; }
+  .wl-top h1 { margin:0; font-size:28px; letter-spacing:.5px; } .wl-top .sub { color:var(--teal-dk); font-weight:600; }
+  .wl-top img { height:40px; margin-left:18px; }
+  .wl-stage { position:absolute; left:30px; bottom:34px; background:rgba(255,255,255,.9); border-left:4px solid var(--teal); padding:12px 18px; border-radius:6px; min-width:260px; }
+  .wl-stage .n { color:var(--teal-dk); font-size:12px; font-weight:700; letter-spacing:1px; } .wl-stage .t { font-size:20px; font-weight:700; }
+  .wl-bar { height:3px; background:var(--line); margin-top:8px; } .wl-bar div { height:100%; width:0; background:var(--teal); transition:width .4s; }
+  #enter { position:absolute; right:34px; bottom:34px; font-size:20px; padding:16px 34px; border-radius:40px; box-shadow:0 10px 30px rgba(0,110,90,.35); opacity:0; transform:translateY(10px); transition:all .6s; }
+  #enter.show { opacity:1; transform:none; }
+  #skip { position:absolute; right:34px; top:90px; }
+  /* app */
+  header { background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:18px; padding:10px 22px; position:sticky; top:0; z-index:10; flex-wrap:wrap; }
+  header img { height:30px; } header .proj { font-weight:700; } header .meta { color:var(--grey); font-size:13px; }
+  nav { margin-left:auto; display:flex; gap:4px; flex-wrap:wrap; }
+  nav button { background:none; border:0; padding:10px 14px; border-radius:6px; color:var(--grey); font-weight:600; }
+  nav button.on { color:var(--teal-dk); background:#e5f4f1; }
+  main { padding:22px; max-width:1400px; margin:0 auto; }
+  .stamp { display:inline-block; border:2px solid #c0392b; color:#c0392b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; }
+  #tab-3d { display:grid; grid-template-columns: 1fr 320px; gap:18px; min-height:calc(100vh - 110px); }
+  #tab-3d model-viewer { width:100%; height:calc(100vh - 110px); min-height:420px; background:#fff; border:1px solid var(--line); border-radius:10px; }
+  .stages { display:flex; flex-direction:column; gap:10px; }
+  .stage { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; text-align:left; }
+  .stage.on { border-color:var(--teal); box-shadow:inset 4px 0 0 var(--teal); }
+  .stage .n { font-size:11px; font-weight:700; color:var(--teal-dk); letter-spacing:1px; } .stage .t { font-weight:700; margin:2px 0; } .stage .d { color:var(--grey); font-size:13px; }
+  h2 { margin:6px 0 14px; } h3 { margin:22px 0 10px; color:var(--teal-dk); font-size:14px; letter-spacing:1px; text-transform:uppercase; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:14px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+  .card img { width:100%; aspect-ratio: 1.414; object-fit:cover; background:#fafafa; border-bottom:1px solid var(--line); cursor:zoom-in; }
+  .card .b { padding:10px 12px; flex:1; } .card .num { font-size:12px; font-weight:700; color:var(--teal-dk); } .card .ti { font-weight:600; font-size:14px; }
+  .card .acts { display:flex; gap:8px; padding:0 12px 12px; } .card .acts a, .card .acts button { flex:1; text-align:center; font-size:13px; padding:8px; border-radius:6px; text-decoration:none; }
+  .card .acts button { background:var(--teal); color:#fff; border:0; } .card .acts a { border:1px solid var(--teal); color:var(--teal-dk); }
+  table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; font-size:14px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; } th { background:#f0f4f4; font-size:12px; color:var(--grey); }
+  .pill { display:inline-block; font-size:12px; padding:3px 9px; border-radius:20px; background:#fff3e0; color:#a15c00; font-weight:600; white-space:nowrap; }
+  #viewer { position:fixed; inset:0; background:rgba(10,20,25,.8); z-index:30; display:flex; flex-direction:column; padding:14px; }
+  #viewer .bar { display:flex; gap:10px; align-items:center; color:#fff; margin-bottom:10px; } #viewer .bar .ti { flex:1; font-weight:600; }
+  #viewer iframe { flex:1; border:0; border-radius:8px; background:#fff; }
+  .hero { display:grid; grid-template-columns: 1.3fr 1fr; gap:18px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:18px; }
+  .hero img { width:100%; }
+  @media (max-width: 900px) { #tab-3d { grid-template-columns:1fr; } #tab-3d model-viewer { height:60vh; } .hero { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div id="gate" class="hidden">
+  <div class="gate-card">
+    <div class="logos"><img src="logo_nudura.png" alt="Nudura"><img src="logo_buildease.png" alt="BuildEase"></div>
+    <h1 id="g-title">Project portal</h1>
+    <p>ICF approval issue. Enter the access code you were sent.</p>
+    <input id="code" inputmode="numeric" autocomplete="off" placeholder="Access code">
+    <div class="err" id="g-err"></div>
+    <button class="btn" id="g-go" style="width:100%;margin-top:6px">Open portal</button>
+  </div>
+</div>
+
+<div id="welcome" class="hidden">
+  <model-viewer id="wl-mv" camera-orbit="-35deg 62deg auto" auto-rotate rotation-per-second="18deg" interaction-prompt="none"
+                shadow-intensity="1" exposure="1.05" environment-image="neutral" disable-zoom></model-viewer>
+  <div class="wl-top"><div><h1 id="wl-title"></h1><div class="sub">ICF approval issue</div></div>
+    <div><img src="logo_nudura.png" alt=""><img src="logo_buildease.png" alt=""></div></div>
+  <div class="wl-stage"><div class="n" id="wl-n"></div><div class="t" id="wl-t"></div><div class="wl-bar"><div id="wl-p"></div></div></div>
+  <button class="btn ghost" id="skip">Skip</button>
+  <button class="btn" id="enter">Welcome &nbsp;&rarr;</button>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <img src="logo_nudura.png" alt="Nudura"><img src="logo_buildease.png" alt="BuildEase">
+    <div><div class="proj" id="h-proj"></div><div class="meta" id="h-meta"></div></div>
+    <span class="stamp">FOR APPROVAL - NOT FOR CONSTRUCTION</span>
+    <nav>
+      <button data-tab="home" class="on">Overview</button><button data-tab="3d">3D model</button>
+      <button data-tab="drawings">Drawings</button><button data-tab="eng">Engineering</button><button data-tab="dl">Downloads</button>
+    </nav>
+  </header>
+  <main>
+    <section id="tab-home"></section>
+    <section id="tab-3d" class="hidden">
+      <model-viewer id="mv" camera-controls auto-rotate rotation-per-second="10deg" shadow-intensity="1" exposure="1.05"
+                    environment-image="neutral" camera-orbit="-35deg 62deg auto"></model-viewer>
+      <div class="stages" id="stages"></div>
+    </section>
+    <section id="tab-drawings" class="hidden"></section>
+    <section id="tab-eng" class="hidden"></section>
+    <section id="tab-dl" class="hidden"></section>
+  </main>
+</div>
+
+<div id="viewer" class="hidden">
+  <div class="bar"><div class="ti" id="v-title"></div><a class="btn" id="v-dl" download>Download PDF</a><button class="btn ghost" id="v-close" style="color:#fff;border-color:#fff">Close</button></div>
+  <iframe id="v-frame" title="Drawing"></iframe>
+</div>
+
+<script>
+const HASH = "";
+let M = null;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s || "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+async function sha256(t) {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+function unlocked() { try { return sessionStorage.getItem("icf-portal") === HASH; } catch (e) { return false; } }
+
+async function tryCode() {
+  const v = $("#code").value.trim();
+  if (await sha256(v) === HASH) {
+    try { sessionStorage.setItem("icf-portal", HASH); } catch (e) {}
+    $("#gate").classList.add("hidden");
+    startWelcome();
+  } else { $("#g-err").textContent = "That code is not recognised."; }
+}
+
+async function load() {
+  M = await (await fetch("portal.json")).json();
+  $("#g-title").textContent = M.project.job;
+  $("#wl-title").textContent = M.project.job;
+  $("#h-proj").textContent = M.project.job;
+  $("#h-meta").textContent = `${M.project.number}  |  Issue ${M.project.revision} ${M.project.date}  |  Client: ${M.project.client}`;
+  buildApp();
+  // no access code (Tom): straight into the build animation; ?tab=drawings|3d|eng|dl deep-links past it
+  const q = new URLSearchParams(location.search);
+  if (q.get("tab")) { openApp(); showTab(q.get("tab")); } else startWelcome();
+}
+
+function startWelcome() {
+  const w = $("#welcome"), mv = $("#wl-mv");
+  w.classList.remove("hidden");
+  let i = 0;
+  const step = () => {
+    const s = M.stages[i];
+    mv.src = s.glb;
+    $("#wl-n").textContent = `STAGE ${s.n} OF ${M.stages.length}`;
+    $("#wl-t").textContent = s.title;
+    $("#wl-p").style.width = `${(100 * (i + 1)) / M.stages.length}%`;
+    i += 1;
+    if (i < M.stages.length) setTimeout(step, 1900);
+    else setTimeout(() => $("#enter").classList.add("show"), 900);
+  };
+  M.stages.forEach((s) => { const l = document.createElement("link"); l.rel = "prefetch"; l.href = s.glb; document.head.appendChild(l); });
+  step();
+}
+function openApp() { $("#welcome").classList.add("hidden"); $("#app").classList.remove("hidden"); showStage(M.stages.length); }
+
+function card(d) {
+  return `<div class="card"><img loading="lazy" src="${d.thumb}" alt="" data-open="${d.id}">
+    <div class="b"><div class="num">${esc(d.number)}</div><div class="ti">${esc(d.title)}</div>${d.note ? `<div class="meta" style="color:var(--grey);font-size:12px;margin-top:4px">${esc(d.note)}</div>` : ""}</div>
+    <div class="acts"><button data-open="${d.id}">View</button><a href="${d.file}" download>Download</a></div></div>`;
+}
+function buildApp() {
+  const docs = M.docs, byGroup = {};
+  docs.forEach((d) => (byGroup[d.group] = byGroup[d.group] || []).push(d));
+  const pack = docs.find((d) => d.id === "PACK");
+  $("#tab-home").innerHTML = `<div class="hero"><div><img src="hero.jpg" alt="3D view of the ICF structure"></div>
+    <div><h2>${esc(M.project.job)}</h2><p>ICF approval drawings for comment and approval, with the model in five build stages.
+    Structural engineer's drawings take precedence for structure.</p>
+    <p><span class="stamp">FOR APPROVAL - NOT FOR CONSTRUCTION</span></p>
+    <p style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-go="3d">Explore the 3D model</button>
+    <button class="btn ghost" data-go="drawings">View drawings</button>${pack ? `<a class="btn ghost" href="${pack.file}" download style="text-decoration:none">Download the pack</a>` : ""}</p></div></div>
+    <h3>Engineering</h3><p>${M.questions.length} question(s) are with the structural engineer. See <a href="#" data-go="eng">Engineering</a>.</p>`;
+  $("#stages").innerHTML = M.stages.map((s) => `<button class="stage" data-stage="${s.n}"><div class="n">STAGE ${s.n}</div><div class="t">${esc(s.title)}</div><div class="d">${esc(s.desc)}</div></button>`).join("");
+  const order = ["Pack", "General arrangement", "Elevations", "Sections", "Details"];
+  $("#tab-drawings").innerHTML = order.filter((g) => byGroup[g]).map((g) => `<h3>${g}</h3><div class="grid">${byGroup[g].map(card).join("")}</div>`).join("");
+  const eng = byGroup["Engineering"] || [];
+  $("#tab-eng").innerHTML = `<h2>Engineering</h2><p>The structural engineer's drawing and our questions for the engineer. Click a question sheet to read the drawings behind it.</p>
+    <div class="grid">${eng.map(card).join("")}</div>
+    <h3>Questions for the engineer</h3>
+    <table><thead><tr><th>Ref</th><th>Subject</th><th>Question</th><th>Status</th></tr></thead><tbody>
+    ${M.questions.map((q) => `<tr><td><b>${esc(q.id)}</b></td><td>${esc(q.subject)}</td><td>${esc(q.question)}${q.response ? `<br><i>Response: ${esc(q.response)}</i>` : ""}</td><td><span class="pill">${esc(q.status)}</span></td></tr>`).join("")}
+    </tbody></table>`;
+  $("#tab-dl").innerHTML = `<h2>Downloads</h2><div class="grid">${pack ? card(pack) : ""}
+    <div class="card"><div class="b"><div class="num">ZIP</div><div class="ti">All drawings and the engineer's drawing</div></div>
+    <div class="acts"><a href="${M.zip}" download>Download ZIP</a></div></div></div>`;
+}
+function showTab(t) {
+  document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
+  ["home", "3d", "drawings", "eng", "dl"].forEach((k) => $(`#tab-${k}`).classList.toggle("hidden", k !== t));
+  window.scrollTo(0, 0);
+}
+function showStage(n) {
+  const s = M.stages.find((x) => x.n === n);
+  $("#mv").src = s.glb;
+  document.querySelectorAll(".stage").forEach((b) => b.classList.toggle("on", +b.dataset.stage === n));
+}
+function openDoc(id) {
+  const d = M.docs.find((x) => x.id === id);
+  $("#v-title").textContent = `${d.number}  ${d.title}`;
+  $("#v-frame").src = d.file;
+  $("#v-dl").href = d.file;
+  $("#viewer").classList.remove("hidden");
+}
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-tab],[data-go],[data-stage],[data-open]");
+  if (!t) return;
+  if (t.dataset.tab) showTab(t.dataset.tab);
+  if (t.dataset.go) { e.preventDefault(); showTab(t.dataset.go); }
+  if (t.dataset.stage) showStage(+t.dataset.stage);
+  if (t.dataset.open) openDoc(t.dataset.open);
+});
+$("#v-close").onclick = () => { $("#viewer").classList.add("hidden"); $("#v-frame").src = "about:blank"; };
+$("#g-go").onclick = tryCode;
+$("#code").addEventListener("keydown", (e) => { if (e.key === "Enter") tryCode(); });
+$("#enter").onclick = openApp;
+$("#skip").onclick = openApp;
+load();
+</script>
+</body>
+</html>

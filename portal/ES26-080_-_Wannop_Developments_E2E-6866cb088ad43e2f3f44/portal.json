@@ -1,0 +1,66 @@
+{
+  "project": {
+    "job": "Wannop Developments E2E",
+    "client": "Wannop Developments",
+    "number": "ES26-080",
+    "revision": "A",
+    "status": "For approval",
+    "date": "09/11/2026"
+  },
+  "stages": [
+    {
+      "n": 1,
+      "title": "FB",
+      "desc": "8 groups, 713 blocks - 6.6in XR35 Series",
+      "glb": "models/stage-1.glb"
+    },
+    {
+      "n": 2,
+      "title": "L1",
+      "desc": "8 groups, 1396 blocks - 6.6in XR35 Series",
+      "glb": "models/stage-2.glb"
+    },
+    {
+      "n": 3,
+      "title": "L2",
+      "desc": "6 groups, 1654 blocks - 6.6in XR35 Series",
+      "glb": "models/stage-3.glb"
+    }
+  ],
+  "docs": [
+    {
+      "id": "PACK",
+      "title": "Nudura proposal",
+      "number": "ES26-080 Rev A",
+      "group": "Pack",
+      "file": "docs/ES26-080_Rev_A.pdf",
+      "thumb": "",
+      "pages": 1,
+      "note": "For approval"
+    },
+    {
+      "id": "DWG1",
+      "title": "EL-01 Elevations",
+      "number": "",
+      "group": "Drawings",
+      "file": "docs/drawings/EL-01 Elevations.pdf",
+      "thumb": "",
+      "pages": 1,
+      "note": ""
+    },
+    {
+      "id": "DWG2",
+      "title": "GA-01 Site Plan",
+      "number": "",
+      "group": "Drawings",
+      "file": "docs/drawings/GA-01 Site Plan.pdf",
+      "thumb": "",
+      "pages": 1,
+      "note": ""
+    }
+  ],
+  "questions": [
+
+  ],
+  "zip": "downloads/ES26-080_Wannop_Developments_E2E_-_documents.zip"
+}
